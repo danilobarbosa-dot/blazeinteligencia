@@ -146,6 +146,8 @@ padding:20px;
 
 border:1px solid rgba(255,255,255,0.04);
 
+margin-bottom:20px;
+
 }
 
 .message{
@@ -200,8 +202,6 @@ width:100%;
 
 height:110px;
 
-margin-top:20px;
-
 background:#111;
 
 border:none;
@@ -219,6 +219,28 @@ font-size:15px;
 font-family:Montserrat;
 
 resize:none;
+
+}
+
+input[type="file"]{
+
+margin-top:15px;
+width:100%;
+color:white;
+
+}
+
+#preview{
+
+display:none;
+
+width:100%;
+
+margin-top:15px;
+
+border-radius:15px;
+
+border:1px solid rgba(255,255,255,0.08);
 
 }
 
@@ -331,6 +353,14 @@ id="pergunta"
 placeholder="Digite sua pergunta..."
 ></textarea>
 
+<input
+type="file"
+id="imagem"
+accept="image/*"
+/>
+
+<img id="preview">
+
 <button class="send" onclick="perguntarIA()">
 PERGUNTAR PARA IA
 </button>
@@ -341,60 +371,109 @@ PERGUNTAR PARA IA
 
 <script>
 
-const API_KEY = "SUA_API_AQUI";
+const API_KEY = "AIzaSyAror8Kbwl9wVHQ3eKNtNA4Y5GOt3et9Yw";
 
-const SYSTEM_PROMPT = `
+document
+.getElementById("imagem")
+.addEventListener("change", function(e){
 
-Você é uma inteligência artificial especializada em:
-- cassino
-- esportes
-- jogos
-- dúvidas gerais
+const file = e.target.files[0];
 
-REGRAS:
-- Nunca fale de outros cassinos.
-- Nunca recomende concorrentes.
-- Nunca use palavrões.
-- Nunca aceite xingamentos.
-- Caso o usuário xingue responda:
-"Vamos manter uma conversa respeitosa para que eu possa ajudar."
+if(!file) return;
 
-- Seja profissional.
-- Seja educado.
-- Responda curto e objetivo.
-- Explique de forma simples.
+const reader = new FileReader();
 
-`;
+reader.onload = function(event){
+
+const preview =
+document.getElementById("preview");
+
+preview.src = event.target.result;
+
+preview.style.display = "block";
+
+}
+
+reader.readAsDataURL(file);
+
+});
 
 async function perguntarIA(){
 
 const pergunta =
 document.getElementById("pergunta").value;
 
-if(!pergunta) return;
+const imagemInput =
+document.getElementById("imagem");
+
+const file =
+imagemInput.files[0];
 
 const chat =
 document.getElementById("chat");
 
+if(!pergunta && !file) return;
+
 chat.innerHTML += `
 <div class="message user">
-<b>Você:</b><br>${pergunta}
+<b>Você:</b><br>${pergunta || "Imagem enviada"}
 </div>
 `;
 
 chat.innerHTML += `
 <div class="message bot loading" id="loading">
-Pensando...
+Analisando...
 </div>
 `;
 
 chat.scrollTop = chat.scrollHeight;
 
-document.getElementById("pergunta").value = "";
+let parts = [];
+
+if(pergunta){
+
+parts.push({
+text:
+`
+Você é especialista em:
+- esportes
+- cassino
+- apostas
+
+Nunca use palavrão.
+Nunca recomende concorrentes.
+
+Analise de forma profissional.
+
+Pergunta:
+${pergunta}
+`
+});
+
+}
+
+if(file){
+
+const base64 =
+await toBase64(file);
+
+const imageData =
+base64.split(",")[1];
+
+parts.push({
+
+inlineData:{
+mimeType:file.type,
+data:imageData
+}
+
+});
+
+}
 
 try{
 
-const resposta = await fetch(
+const response = await fetch(
 
 `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
 
@@ -409,18 +488,14 @@ body:JSON.stringify({
 
 contents:[
 {
-parts:[
-{
-text: `
-${SYSTEM_PROMPT}
+parts:parts
+}
+],
 
-Pergunta:
-${pergunta}
-`
+generationConfig:{
+temperature:0.7,
+maxOutputTokens:700
 }
-]
-}
-]
 
 })
 
@@ -428,26 +503,32 @@ ${pergunta}
 
 );
 
-const dados = await resposta.json();
+const data = await response.json();
 
 document.getElementById("loading").remove();
 
-let texto = "Erro ao gerar resposta.";
+console.log(data);
 
-if(
-dados.candidates &&
-dados.candidates[0] &&
-dados.candidates[0].content &&
-dados.candidates[0].content.parts &&
-dados.candidates[0].content.parts[0]
-){
-texto =
-dados.candidates[0].content.parts[0].text;
+if(data.error){
+
+chat.innerHTML += `
+<div class="message bot">
+Erro API: ${data.error.message}
+</div>
+`;
+
+return;
+
 }
+
+const texto =
+data.candidates?.[0]?.content?.parts?.[0]?.text
+|| "Sem resposta da IA.";
 
 const id = Date.now();
 
 chat.innerHTML += `
+
 <div class="message bot">
 
 <div id="resposta-${id}">
@@ -462,9 +543,15 @@ Copiar Resposta
 </button>
 
 </div>
+
 `;
 
 chat.scrollTop = chat.scrollHeight;
+
+document.getElementById("pergunta").value = "";
+document.getElementById("imagem").value = "";
+
+document.getElementById("preview").style.display = "none";
 
 }catch(error){
 
@@ -488,6 +575,22 @@ const texto =
 document.getElementById(id).innerText;
 
 navigator.clipboard.writeText(texto);
+
+}
+
+function toBase64(file){
+
+return new Promise((resolve,reject)=>{
+
+const reader = new FileReader();
+
+reader.readAsDataURL(file);
+
+reader.onload = () => resolve(reader.result);
+
+reader.onerror = error => reject(error);
+
+});
 
 }
 
