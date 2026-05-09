@@ -7,9 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Montserrat; background: #050505; color: white; overflow-x: hidden; }
+        body { font-family: Montserrat, sans-serif; background: #050505; color: white; overflow-x: hidden; }
 
-        /* BANNER */
         .banner {
             width: 100%; height: 280px;
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('https://images6.alphacoders.com/978/978181.jpg');
@@ -20,82 +19,65 @@
         .banner h1 { font-size: 55px; font-weight: 700; color: #ff6b00; text-shadow: 0 0 20px rgba(255,107,0,0.4); }
         .banner p { margin-top: 10px; font-size: 18px; color: #ddd; }
 
-        /* CONTAINER */
         .container { max-width: 900px; margin: auto; padding: 30px 20px; }
 
-        /* TAGS */
         .tags { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: -25px; margin-bottom: 30px; }
         .tag { background: #111; border: 1px solid #ff6b00; padding: 12px 20px; border-radius: 999px; font-size: 14px; transition: 0.3s; color: white; cursor: pointer; }
         .tag:hover { background: #ff6b00; transform: translateY(-2px); }
-        a { text-decoration: none; }
 
-        /* CHAT */
         .chat-container { background: #0d0d0d; border: 1px solid rgba(255,107,0,0.25); border-radius: 25px; padding: 25px; box-shadow: 0 0 30px rgba(255,107,0,0.12); }
         .chat-box { height: 450px; overflow-y: auto; background: #090909; border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.04); margin-bottom: 20px; }
+        
         .message { margin-bottom: 20px; line-height: 1.6; }
-        .user { color: #ff9d4d; text-align: left; border-left: 3px solid #ff6b00; padding-left: 10px; }
+        .user { color: #ff9d4d; border-left: 3px solid #ff6b00; padding-left: 10px; }
         .bot { background: #111; padding: 15px; border-radius: 15px; margin-top: 10px; border: 1px solid #222; }
         
-        /* Imagens dentro do Chat */
         .chat-img { max-width: 200px; border-radius: 10px; margin-top: 10px; border: 1px solid #ff6b00; }
-
         .copy-btn { margin-top: 10px; background: #ff6b00; border: none; padding: 8px 14px; border-radius: 10px; color: white; font-size: 12px; cursor: pointer; }
         
         textarea { width: 100%; height: 110px; background: #111; border: 1px solid #333; outline: none; border-radius: 18px; padding: 18px; color: white; font-size: 15px; font-family: Montserrat; resize: none; }
-        input[type="file"] { margin-top: 15px; width: 100%; color: #888; font-size: 13px; }
+        input[type="file"] { margin-top: 15px; width: 100%; color: #888; }
         
-        #preview { display: none; width: 120px; height: auto; margin-top: 15px; border-radius: 10px; border: 2px solid #ff6b00; }
-
+        #preview { display: none; width: 120px; margin-top: 15px; border-radius: 10px; border: 2px solid #ff6b00; }
         button.send { width: 100%; margin-top: 15px; padding: 18px; border: none; border-radius: 18px; background: #ff6b00; color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; }
         button.send:hover { opacity: 0.95; transform: scale(1.01); }
 
         .loading { opacity: 0.7; font-style: italic; color: #ff6b00; }
-
-        @media(max-width:700px){
-            .banner h1 { font-size: 38px; }
-            .chat-box { height: 350px; }
-        }
     </style>
 </head>
 <body>
 
 <div class="banner">
     <h1>Blaze Inteligência</h1>
-    <p>Cassino • Esportes • Dúvidas Gerais</p>
+    <p>Cassino • Esportes • Suporte VIP</p>
 </div>
 
 <div class="container">
     <div class="tags">
         <div class="tag">Cassino</div>
         <div class="tag">Esportes</div>
-        <a href="https://sites.google.com/blaze.bet.br/fluxodeatendimento/home" target="_blank">
-            <div class="tag">Calculadora Cashback</div>
-        </a>
+        <div class="tag">Dúvidas Frequentes</div>
     </div>
 
     <div class="chat-container">
         <div class="chat-box" id="chat"></div>
-
-        <textarea id="pergunta" placeholder="Digite sua pergunta..."></textarea>
-        
+        <textarea id="pergunta" placeholder="Digite sua dúvida sobre a Blaze..."></textarea>
         <input type="file" id="imagem" accept="image/*" />
         <img id="preview">
-
         <button class="send" onclick="perguntarIA()">PERGUNTAR PARA IA</button>
     </div>
 </div>
 
 <script>
-    // IMPORTANTE: Use uma chave de API válida e evite expô-la publicamente
-    const API_KEY = "AIzaSyDw2IUAemgf4l6E7qIf9cw5myX9DYkdXcQ";
+    // COLOQUE SUA CHAVE ABAIXO (A que termina em dXcXQ)
+    const API_KEY = "AIzaSyDO-2_4McX1xyTSvbPhLXY4EzHMbO5uu04"; 
 
-    // Preview da imagem antes de enviar
+    // Pré-visualização da imagem
     document.getElementById("imagem").addEventListener("change", function(e){
         const file = e.target.files[0];
         if(!file) return;
-
         const reader = new FileReader();
-        reader.onload = function(event){
+        reader.onload = (event) => {
             const preview = document.getElementById("preview");
             preview.src = event.target.result;
             preview.style.display = "block";
@@ -104,117 +86,87 @@
     });
 
     async function perguntarIA(){
-        const perguntaInput = document.getElementById("pergunta");
-        const imagemInput = document.getElementById("imagem");
+        const pInput = document.getElementById("pergunta");
+        const iInput = document.getElementById("imagem");
         const chat = document.getElementById("chat");
         const preview = document.getElementById("preview");
 
-        const pergunta = perguntaInput.value;
-        const file = imagemInput.files[0];
+        const pergunta = pInput.value;
+        const file = iInput.files[0];
 
         if(!pergunta && !file) return;
 
-        // 1. Criar o balão de mensagem do Usuário no Chat
-        let userMsgHTML = `<div class="message user"><b>Você:</b><br>`;
-        
-        if(file) {
-            const tempUrl = URL.createObjectURL(file);
-            userMsgHTML += `<img src="${tempUrl}" class="chat-img"><br>`;
-        }
-        
-        if(pergunta) {
-            userMsgHTML += `<span>${pergunta}</span>`;
-        }
-        userMsgHTML += `</div>`;
-        
-        chat.innerHTML += userMsgHTML;
+        // Adiciona ao chat e limpa os campos
+        let userHTML = `<div class="message user"><b>Você:</b><br>`;
+        if(file) userHTML += `<img src="${URL.createObjectURL(file)}" class="chat-img"><br>`;
+        if(pergunta) userHTML += `<span>${pergunta}</span>`;
+        userHTML += `</div>`;
+        chat.innerHTML += userHTML;
 
-        // 2. Limpar campos de entrada imediatamente
-        const fileToSend = file; // Guardamos o arquivo para a API antes de limpar
-        perguntaInput.value = "";
-        imagemInput.value = "";
+        const fileToSend = file;
+        pInput.value = "";
+        iInput.value = "";
         preview.style.display = "none";
-        preview.src = "";
 
-        // 3. Adicionar feedback de carregamento
-        chat.innerHTML += `<div class="message bot loading" id="loading">Analisando dados da Blaze...</div>`;
+        chat.innerHTML += `<div class="message bot loading" id="loading">Consultando sistema Blaze...</div>`;
         chat.scrollTop = chat.scrollHeight;
 
-        // 4. Preparar dados para o Gemini
-        let parts = [];
-        if(pergunta){
-            parts.push({ text: `Contexto: Especialista Blaze (Cassino/Esportes). Pergunta: ${pergunta}` });
-        }
-
+        // Montagem do conteúdo para o Gemini
+        let contents = [{ parts: [] }];
+        if(pergunta) contents[0].parts.push({ text: pergunta });
+        
         if(fileToSend){
             const base64 = await toBase64(fileToSend);
-            const imageData = base64.split(",")[1];
-            parts.push({
-                inlineData: {
-                    mimeType: fileToSend.type,
-                    data: imageData
-                }
+            contents[0].parts.push({
+                inlineData: { mimeType: fileToSend.type, data: base64.split(",")[1] }
             });
         }
 
-      try {
-            const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: parts }],
-                        generationConfig: { temperature: 0.7, maxOutputTokens: 800 }
-                    })
-                }
-            );
+        try {
+            // URL ATUALIZADA E TESTADA
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+            
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: contents })
+            });
 
             const data = await response.json();
             document.getElementById("loading").remove();
 
-            if(data.error){
-                chat.innerHTML += `<div class="message bot" style="color:red;">Erro na API: ${data.error.message}</div>`;
-                return;
+            if(data.error) {
+                chat.innerHTML += `<div class="message bot" style="color:red">Erro: ${data.error.message}</div>`;
+            } else {
+                let texto = data.candidates[0].content.parts[0].text;
+                const id = Date.now();
+                chat.innerHTML += `
+                    <div class="message bot">
+                        <div id="res-${id}">${texto.replace(/\n/g, '<br>')}</div>
+                        <button class="copy-btn" onclick="copiarTexto('res-${id}')">Copiar</button>
+                    </div>`;
             }
-
-            let respostaIA = data.candidates?.[0]?.content?.parts?.[0]?.text || "Desculpe, não consegui processar isso.";
-            
-            // Formatação básica de quebras de linha
-            respostaIA = respostaIA.replace(/\n/g, '<br>');
-
-            const id = Date.now();
-            chat.innerHTML += `
-                <div class="message bot">
-                    <div id="res-${id}">${respostaIA}</div>
-                    <button class="copy-btn" onclick="copiarTexto('res-${id}')">Copiar Resposta</button>
-                </div>
-            `;
-
-            chat.scrollTop = chat.scrollHeight;
-
-        } catch (error) {
+        } catch (e) {
             if(document.getElementById("loading")) document.getElementById("loading").remove();
-            chat.innerHTML += `<div class="message bot">Erro de conexão. Verifique sua chave de API.</div>`;
-            console.error(error);
+            chat.innerHTML += `<div class="message bot">Erro ao conectar com o servidor.</div>`;
         }
+        chat.scrollTop = chat.scrollHeight;
     }
 
-    function copiarTexto(id){
-        const texto = document.getElementById(id).innerText;
-        navigator.clipboard.writeText(texto);
+    function copiarTexto(id) {
+        const t = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(t);
         alert("Copiado!");
     }
 
-    function toBase64(file){
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
+    function toBase64(file) {
+        return new Promise((res, rej) => {
+            const r = new FileReader();
+            r.readAsDataURL(file);
+            r.onload = () => res(r.result);
+            r.onerror = e => rej(e);
         });
     }
 </script>
-
 </body>
 </html>
