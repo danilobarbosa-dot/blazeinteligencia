@@ -1,0 +1,414 @@
+```html id="zq4r6x"
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BLAZE I.A</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#0d0d0d;
+font-family:Montserrat;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+padding:20px;
+}
+
+.chat-container{
+
+width:100%;
+max-width:500px;
+
+background:rgba(20,20,20,0.95);
+
+border:1px solid rgba(255,107,0,0.4);
+
+border-radius:25px;
+
+padding:25px;
+
+box-shadow:
+0 0 30px rgba(255,107,0,0.2);
+
+}
+
+.logo{
+
+text-align:center;
+margin-bottom:20px;
+
+}
+
+.logo img{
+
+width:180px;
+margin-bottom:15px;
+
+}
+
+.logo h1{
+
+color:#ff6b00;
+font-size:35px;
+font-weight:700;
+
+}
+
+.logo p{
+
+margin-top:8px;
+font-size:14px;
+color:#aaa;
+line-height:1.6;
+
+}
+
+.tags{
+
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-top:18px;
+justify-content:center;
+
+}
+
+.tag{
+
+background:#1f1f1f;
+border:1px solid #ff6b00;
+padding:8px 14px;
+border-radius:999px;
+font-size:12px;
+color:white;
+transition:0.3s;
+
+}
+
+.tag:hover{
+
+background:#ff6b00;
+
+}
+
+.chat-box{
+
+margin-top:25px;
+
+background:#111;
+
+border-radius:20px;
+
+padding:20px;
+
+min-height:300px;
+
+max-height:400px;
+
+overflow-y:auto;
+
+border:1px solid rgba(255,255,255,0.05);
+
+}
+
+.message{
+
+margin-bottom:15px;
+line-height:1.7;
+font-size:14px;
+
+}
+
+.user{
+
+color:#ffb066;
+
+}
+
+.bot{
+
+color:#ffffff;
+
+}
+
+textarea{
+
+width:100%;
+height:90px;
+
+margin-top:20px;
+
+background:#1b1b1b;
+
+border:none;
+
+outline:none;
+
+resize:none;
+
+border-radius:15px;
+
+padding:15px;
+
+color:white;
+
+font-size:14px;
+
+font-family:Montserrat;
+
+}
+
+button{
+
+width:100%;
+
+margin-top:15px;
+
+padding:16px;
+
+border:none;
+
+border-radius:15px;
+
+background:#ff6b00;
+
+color:white;
+
+font-weight:700;
+
+font-size:15px;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+button:hover{
+
+transform:scale(1.02);
+
+opacity:0.95;
+
+}
+
+.loading{
+
+opacity:0.7;
+font-style:italic;
+
+}
+
+a{
+text-decoration:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+<div class="logo">
+
+<img 
+src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Blaze_Logo.svg/512px-Blaze_Logo.svg.png"
+>
+
+<h1>BLAZE I.A</h1>
+
+<p>
+Inteligência personalizada para:<br>
+Cassino • Esportes
+</p>
+
+<div class="tags">
+
+<div class="tag">Cassino</div>
+
+<div class="tag">Esportes</div>
+
+<a
+href="https://sites.google.com/blaze.bet.br/fluxodeatendimento/home"
+target="_blank"
+>
+
+<div class="tag">
+Calculadora Cashback
+</div>
+
+</a>
+
+</div>
+
+</div>
+
+<div class="chat-box" id="chat">
+
+<div class="message bot">
+Olá! Sou a Blaze I.A.<br><br>
+
+Posso ajudar com:
+- cassino
+- esportes
+- regras da Blaze
+- jogos
+</div>
+
+</div>
+
+<textarea
+id="pergunta"
+placeholder="Digite sua pergunta..."
+></textarea>
+
+<button onclick="perguntarIA()">
+PERGUNTAR PARA IA
+</button>
+
+</div>
+
+<script>
+
+const API_KEY = "AIzaSyBHku2eVGWNPuhBJAVGJ3m6Q2QZqAtSIkc";
+
+const SYSTEM_PROMPT = `
+Você é a BLAZE I.A.
+
+Uma inteligência artificial personalizada da Blaze.
+
+Especialidades:
+- cassino
+- apostas esportivas
+- regras da Blaze
+- jogos
+
+REGRAS IMPORTANTES:
+
+- Nunca fale de outros cassinos.
+- Nunca recomende concorrentes.
+- Nunca use palavrões.
+- Nunca xingue usuários.
+- Não aceite ofensas ou agressividade.
+- Caso o usuário xingue, responda educadamente:
+"Vamos manter uma conversa respeitosa para que eu possa ajudar."
+- Responda sempre de forma profissional.
+- Seja curto e direto.
+- Explique de maneira fácil.
+- Fale como um especialista da Blaze.
+- Caso a pergunta não seja relacionada à Blaze, cassino ou esportes, diga:
+"Posso ajudar apenas com assuntos relacionados à Blaze."
+
+`;
+
+async function perguntarIA(){
+
+const pergunta =
+document.getElementById("pergunta").value;
+
+if(!pergunta) return;
+
+const chat =
+document.getElementById("chat");
+
+chat.innerHTML += `
+<div class="message user">
+<b>Você:</b><br>${pergunta}
+</div>
+`;
+
+chat.innerHTML += `
+<div class="message bot loading" id="loading">
+BLAZE I.A está pensando...
+</div>
+`;
+
+chat.scrollTop = chat.scrollHeight;
+
+document.getElementById("pergunta").value = "";
+
+try{
+
+const resposta = await fetch(
+
+`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
+
+{
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+contents:[{
+
+parts:[{
+
+text: `
+${SYSTEM_PROMPT}
+
+Pergunta do usuário:
+${pergunta}
+`
+
+}]
+
+}]
+
+})
+
+}
+
+);
+
+const dados = await resposta.json();
+
+document.getElementById("loading").remove();
+
+const texto =
+dados.candidates[0].content.parts[0].text;
+
+chat.innerHTML += `
+<div class="message bot">
+<b>BLAZE I.A:</b><br>${texto}
+</div>
+`;
+
+chat.scrollTop = chat.scrollHeight;
+
+}catch(error){
+
+document.getElementById("loading").remove();
+
+chat.innerHTML += `
+<div class="message bot">
+Erro ao conectar com a IA.
+</div>
+`;
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
+```
