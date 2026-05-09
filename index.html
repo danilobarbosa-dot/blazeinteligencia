@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -339,7 +340,7 @@ PERGUNTAR PARA IA
 
 <script>
 
-const API_KEY = "AIzaSyBHku2eVGWNPuhBJAVGJ3m6Q2QZqAtSIkc";
+const API_KEY = "COLE_SUA_NOVA_API_AQUI";
 
 const SYSTEM_PROMPT = `
 
@@ -427,6 +428,8 @@ const dados = await resposta.json();
 
 document.getElementById("loading").remove();
 
+console.log(dados);
+
 let texto = "Erro ao gerar resposta.";
 
 if(
@@ -471,6 +474,8 @@ Erro ao conectar com a IA.
 </div>
 `;
 
+console.error(error);
+
 }
 
 }
@@ -488,3 +493,4 @@ navigator.clipboard.writeText(texto);
 
 </body>
 </html>
+```
