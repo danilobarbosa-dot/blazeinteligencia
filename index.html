@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>BLAZE I.A</title>
+<title>Blaze Inteligência</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -28,11 +28,11 @@ overflow-x:hidden;
 .banner{
 
 width:100%;
-height:300px;
+height:280px;
 
-background-image:
+background:
 linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
-url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2070&auto=format&fit=crop');
+url('https://images6.alphacoders.com/978/978181.jpg');
 
 background-size:cover;
 background-position:center;
@@ -48,11 +48,11 @@ border-bottom:2px solid #ff6b00;
 
 .banner h1{
 
-font-size:60px;
+font-size:55px;
 font-weight:700;
 color:#ff6b00;
 
-text-shadow:0 0 20px rgba(255,107,0,0.5);
+text-shadow:0 0 20px rgba(255,107,0,0.4);
 
 }
 
@@ -136,7 +136,7 @@ box-shadow:
 
 .chat-box{
 
-height:400px;
+height:450px;
 
 overflow-y:auto;
 
@@ -153,7 +153,7 @@ border:1px solid rgba(255,255,255,0.04);
 .message{
 
 margin-bottom:20px;
-line-height:1.7;
+line-height:1.8;
 
 }
 
@@ -165,7 +165,30 @@ color:#ff9d4d;
 
 .bot{
 
+background:#111;
+padding:15px;
+border-radius:15px;
+margin-top:10px;
+
+}
+
+.copy-btn{
+
+margin-top:10px;
+
+background:#ff6b00;
+
+border:none;
+
+padding:8px 14px;
+
+border-radius:10px;
+
 color:white;
+
+font-size:12px;
+
+cursor:pointer;
 
 }
 
@@ -197,7 +220,7 @@ resize:none;
 
 }
 
-button{
+button.send{
 
 width:100%;
 
@@ -223,7 +246,7 @@ transition:0.3s;
 
 }
 
-button:hover{
+button.send:hover{
 
 opacity:0.95;
 transform:scale(1.01);
@@ -268,10 +291,10 @@ height:350px;
 
 <div class="banner">
 
-<h1>BLAZE I.A</h1>
+<h1>Blaze Inteligência</h1>
 
 <p>
-Inteligência personalizada para Cassino e Esportes
+Cassino • Esportes • Dúvidas Gerais
 </p>
 
 </div>
@@ -299,24 +322,14 @@ Calculadora Cashback
 
 <div class="chat-container">
 
-<div class="chat-box" id="chat">
-
-<div class="message bot">
-
-Olá! Sou a Blaze I.A.<br><br>
-
-Posso ajudar com Cassino e Esportes e Dúvidas em Geral.
-
-</div>
-
-</div>
+<div class="chat-box" id="chat"></div>
 
 <textarea
 id="pergunta"
 placeholder="Digite sua pergunta..."
 ></textarea>
 
-<button onclick="perguntarIA()">
+<button class="send" onclick="perguntarIA()">
 PERGUNTAR PARA IA
 </button>
 
@@ -330,30 +343,25 @@ const API_KEY = "AIzaSyBHku2eVGWNPuhBJAVGJ3m6Q2QZqAtSIkc";
 
 const SYSTEM_PROMPT = `
 
-Você é a BLAZE I.A.
-
-Uma inteligência artificial personalizada da Blaze.
-
-Especialidades:
+Você é uma inteligência artificial especializada em:
 - cassino
 - esportes
 - jogos
 - dúvidas gerais
 
-REGRAS IMPORTANTES:
+REGRAS:
 
 - Nunca fale de outros cassinos.
 - Nunca recomende concorrentes.
 - Nunca use palavrões.
-- Nunca xingue usuários.
-- Não aceite agressividade.
-- Caso o usuário xingue, responda:
+- Nunca aceite xingamentos.
+- Se o usuário xingar responda:
 "Vamos manter uma conversa respeitosa para que eu possa ajudar."
 
 - Seja profissional.
 - Seja educado.
+- Responda curto e objetivo.
 - Explique de forma simples.
-- Responda de maneira curta e objetiva.
 
 `;
 
@@ -375,7 +383,7 @@ chat.innerHTML += `
 
 chat.innerHTML += `
 <div class="message bot loading" id="loading">
-BLAZE I.A está pensando...
+Pensando...
 </div>
 `;
 
@@ -387,7 +395,7 @@ try{
 
 const resposta = await fetch(
 
-`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
+"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY,
 
 {
 method:"POST",
@@ -399,18 +407,14 @@ headers:{
 body:JSON.stringify({
 
 contents:[{
-
 parts:[{
-
 text: `
 ${SYSTEM_PROMPT}
 
-Pergunta do usuário:
+Pergunta:
 ${pergunta}
 `
-
 }]
-
 }]
 
 })
@@ -423,12 +427,35 @@ const dados = await resposta.json();
 
 document.getElementById("loading").remove();
 
-const texto =
+let texto = "Erro ao gerar resposta.";
+
+if(
+dados.candidates &&
+dados.candidates[0] &&
+dados.candidates[0].content &&
+dados.candidates[0].content.parts &&
+dados.candidates[0].content.parts[0]
+){
+texto =
 dados.candidates[0].content.parts[0].text;
+}
+
+const id = Date.now();
 
 chat.innerHTML += `
 <div class="message bot">
-<b>BLAZE I.A:</b><br>${texto}
+
+<div id="resposta-${id}">
+${texto}
+</div>
+
+<button
+class="copy-btn"
+onclick="copiarTexto('resposta-${id}')"
+>
+Copiar Resposta
+</button>
+
 </div>
 `;
 
@@ -445,6 +472,15 @@ Erro ao conectar com a IA.
 `;
 
 }
+
+}
+
+function copiarTexto(id){
+
+const texto =
+document.getElementById(id).innerText;
+
+navigator.clipboard.writeText(texto);
 
 }
 
