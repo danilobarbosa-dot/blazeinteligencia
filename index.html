@@ -69,9 +69,6 @@
 </div>
 
 <script>
-    // COLOQUE SUA CHAVE ABAIXO (A que termina em dXcXQ)
-    const API_KEY = "AIzaSyDJM9vnN3s36LZ37mI17CrtWb5_T0c9XiY"; 
-
     // Pré-visualização da imagem
     document.getElementById("imagem").addEventListener("change", function(e){
         const file = e.target.files[0];
@@ -96,24 +93,26 @@
 
         if(!pergunta && !file) return;
 
-        // Adiciona ao chat e limpa os campos
+        // 1. Mostrar mensagem do usuário no chat
         let userHTML = `<div class="message user"><b>Você:</b><br>`;
         if(file) userHTML += `<img src="${URL.createObjectURL(file)}" class="chat-img"><br>`;
         if(pergunta) userHTML += `<span>${pergunta}</span>`;
         userHTML += `</div>`;
         chat.innerHTML += userHTML;
 
+        // 2. Guardar arquivo e limpar campos
         const fileToSend = file;
         pInput.value = "";
         iInput.value = "";
         preview.style.display = "none";
 
+        // 3. Carregamento
         chat.innerHTML += `<div class="message bot loading" id="loading">Consultando sistema Blaze...</div>`;
         chat.scrollTop = chat.scrollHeight;
 
-        // Montagem do conteúdo para o Gemini
+        // 4. Preparar dados
         let contents = [{ parts: [] }];
-        if(pergunta) contents[0].parts.push({ text: pergunta });
+        if(pergunta) contents[0].parts.push({ text: "Você é um especialista Blaze. Responda: " + pergunta });
         
         if(fileToSend){
             const base64 = await toBase64(fileToSend);
@@ -123,8 +122,8 @@
         }
 
         try {
-            // URL ATUALIZADA E TESTADA
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+            // --- COLE SUA CHAVE NO FINAL DO LINK ABAIXO ---
+            const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyDJM9vnN3s36LZ37mI17CrtWb5_T0c9XiY";
             
             const response = await fetch(url, {
                 method: "POST",
@@ -133,7 +132,8 @@
             });
 
             const data = await response.json();
-            document.getElementById("loading").remove();
+            
+            if (document.getElementById("loading")) document.getElementById("loading").remove();
 
             if(data.error) {
                 chat.innerHTML += `<div class="message bot" style="color:red">Erro: ${data.error.message}</div>`;
@@ -148,7 +148,7 @@
             }
         } catch (e) {
             if(document.getElementById("loading")) document.getElementById("loading").remove();
-            chat.innerHTML += `<div class="message bot">Erro ao conectar com o servidor.</div>`;
+            chat.innerHTML += `<div class="message bot">Erro de conexão. Verifique a internet ou a chave.</div>`;
         }
         chat.scrollTop = chat.scrollHeight;
     }
