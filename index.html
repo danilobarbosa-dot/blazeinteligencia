@@ -1,6 +1,5 @@
-```html
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +31,7 @@ width:100%;
 height:280px;
 
 background:
-linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
+linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)),
 url('https://images6.alphacoders.com/978/978181.jpg');
 
 background-size:cover;
@@ -109,7 +108,6 @@ color:white;
 .tag:hover{
 
 background:#ff6b00;
-
 transform:translateY(-2px);
 
 }
@@ -130,8 +128,7 @@ border-radius:25px;
 
 padding:25px;
 
-box-shadow:
-0 0 30px rgba(255,107,0,0.12);
+box-shadow:0 0 30px rgba(255,107,0,0.12);
 
 }
 
@@ -191,6 +188,10 @@ font-size:12px;
 
 cursor:pointer;
 
+}
+
+.copy-btn:hover{
+opacity:0.9;
 }
 
 textarea{
@@ -340,7 +341,7 @@ PERGUNTAR PARA IA
 
 <script>
 
-const API_KEY = "COLE_SUA_NOVA_API_AQUI";
+const API_KEY = "SUA_API_AQUI";
 
 const SYSTEM_PROMPT = `
 
@@ -351,12 +352,11 @@ Você é uma inteligência artificial especializada em:
 - dúvidas gerais
 
 REGRAS:
-
 - Nunca fale de outros cassinos.
 - Nunca recomende concorrentes.
 - Nunca use palavrões.
 - Nunca aceite xingamentos.
-- Se o usuário xingar responda:
+- Caso o usuário xingue responda:
 "Vamos manter uma conversa respeitosa para que eu possa ajudar."
 
 - Seja profissional.
@@ -396,7 +396,7 @@ try{
 
 const resposta = await fetch(
 
-"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY,
+`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
 
 {
 method:"POST",
@@ -407,16 +407,20 @@ headers:{
 
 body:JSON.stringify({
 
-contents:[{
-parts:[{
+contents:[
+{
+parts:[
+{
 text: `
 ${SYSTEM_PROMPT}
 
 Pergunta:
 ${pergunta}
 `
-}]
-}]
+}
+]
+}
+]
 
 })
 
@@ -427,8 +431,6 @@ ${pergunta}
 const dados = await resposta.json();
 
 document.getElementById("loading").remove();
-
-console.log(dados);
 
 let texto = "Erro ao gerar resposta.";
 
@@ -493,4 +495,3 @@ navigator.clipboard.writeText(texto);
 
 </body>
 </html>
-```
